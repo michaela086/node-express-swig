@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+    {% parent %}
+{% endblock %}
+
+{% block content %}
+	{% if message != '' %}
+	<div data-alert class="alert-box alert round">
+	    {{ message }}
+	    <a href="#" class="close">&times;</a>
+	</div>
+	{% endif %}
+    <div class="row">
+        <div class="large-12 columns">
+	        <form id="top-nav-login" action="login" method="post">
+		        <div class="row">
+		            <label>Username</label>
+		            <input type="text" name="username" placeholder="email@example.com" tabindex="1"/>
+		        </div>
+		        <div class="row">
+		            <label>Password</label>
+		            <input type="password" name="password" placeholder="********" tabindex="2"/>
+		        </div>
+		        <div class="row">
+		            <input type="submit" class="button tiny success" value="Login" tabindex="3"/>
+		        </div>
+		    </form>
+	    </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+    {% parent %}
+{% endblock %}
+
+{% block content %}
+	{% if message != '' %}
+	<div data-alert class="alert-box alert round">
+	    {{ message }}
+	    <a href="#" class="close">&times;</a>
+	</div>
+	{% endif %}
+    <div class="row">
+        <div class="large-12 columns">
+	        <p>Welcome to the Account Page!</p>
+	    </div>
+    </div>
+{% endblock %}
