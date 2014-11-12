@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}    
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Welcome to {{ title }}</h1>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="large-6 columns">
+      	<div class="panel">
+	        <p>1</p>
+      	</div>
+      </div>
+      <div class="large-6 columns">
+      	<div class="panel">
+	        <p>2</p>
+      	</div>
+      </div>
+    </div>
+
+	<div class="row">
+        <div class="large-12 columns">
+			<div class="panel">
+	        	<h5>So many components, girl!</h5>
+	        	<p>A whole kitchen sink of goodies comes with Foundation. Checkout the docs to see them all, along with details on making them your own.</p>
+	        	<a href="http://foundation.zurb.com/docs/" class="small button">Go to Foundation Docs</a>          
+	        </div>
+	    </div>
+    </div>
+{% endblock %}
