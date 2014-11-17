@@ -52,7 +52,7 @@ function loadGlobalData(req, cb) {
     } else {
         data.user = '';
     }
-    data.serverport = serverport;
+    data.server = req.headers.host;
     return cb(data);
 }
 
