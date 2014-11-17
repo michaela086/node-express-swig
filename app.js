@@ -11,6 +11,8 @@ var passport = require('passport');
 var flash = require('connect-flash');
 var LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session')
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 var serverport = 3000;
 
 swig.setDefaults({ cache: false });
@@ -37,6 +39,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 eval(fs.readFileSync(__dirname + '/passport.js')+'');
 eval(fs.readFileSync(__dirname + '/routes.js')+'');
+eval(fs.readFileSync(__dirname + '/socket.js')+'');
 
-app.listen(serverport);
 console.log('Application Started on http://localhost:'+serverport+'/');
+
+server.listen(serverport);

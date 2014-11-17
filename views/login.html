@@ -14,20 +14,23 @@
 	</div>
 	{% endif %}
     <div class="row">
-        <div class="large-12 columns">
+        <div class="large-4 large-offset-4 columns">
 	        <form id="top-nav-login" action="login" method="post">
 		        <div class="row">
 		            <label>Username</label>
-		            <input type="text" name="username" placeholder="email@example.com" tabindex="1"/>
+		            <input type="text" name="username" tabindex="1"/>
 		        </div>
 		        <div class="row">
 		            <label>Password</label>
-		            <input type="password" name="password" placeholder="********" tabindex="2"/>
+		            <input type="password" name="password" tabindex="2"/>
 		        </div>
 		        <div class="row">
 		            <input type="submit" class="button tiny success" value="Login" tabindex="3"/>
 		        </div>
 		    </form>
 	    </div>
+	    <div class="large-5 columns">
+        </div>
+
     </div>
 {% endblock %}

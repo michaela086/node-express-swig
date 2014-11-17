@@ -1,31 +1,3 @@
-app.get('/', function(req, res) {
-    loadGlobalData(req, function (globalData) {
-        res.render('index', {
-            globalData: globalData,
-            title: 'Home'
-        });
-    });
-});
-
-app.get('/account', ensureAuthenticated, function(req, res) {
-    loadGlobalData(req, function (globalData) {
-        res.render('account', {
-            globalData: globalData,
-            title: 'My Account'
-        });
-    });
-});
-
-app.get('/admin', ensureAdminAuthenticated, function(req, res) {
-    loadGlobalData(req, function (globalData) {
-        res.render('admin', {
-            globalData: globalData,
-            title: 'Admin',
-            message: req.flash('error')
-        });
-    });
-});
-
 app.get('/login', function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('login', {
@@ -41,13 +13,35 @@ app.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
+app.get('/', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('index', {
+            globalData: globalData,
+            title: 'My Chat',
+            chat_room: req.params[0]
+        });
+    });
+});
+
+app.get('/*', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('chat', {
+            globalData: globalData,
+            title: 'My Chat',
+            username: req.user.username,
+            chat_room: req.params[0]
+        });
+    });
+});
+
 app.post('/login',
     passport.authenticate('local', { 
         failureRedirect: '/login', 
         failureFlash: true 
     }), function(req, res) {
         var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
-        res.redirect(redirectUrl !== undefined ? redirectUrl : '/');
+        console.log(redirectUrl);
+        res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
     }
 );
 
@@ -58,6 +52,7 @@ function loadGlobalData(req, cb) {
     } else {
         data.user = '';
     }
+    data.serverport = serverport;
     return cb(data);
 }
 
@@ -75,11 +70,6 @@ function getUrlVars(url) {
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
-    res.redirect('/login?redirect='+req.route.path);
-}
-
-function ensureAdminAuthenticated(req, res, next) {
-    var isAdmin = req.user && req.user.admin;
-    if (req.isAuthenticated() && isAdmin) { return next(); }
-    res.redirect('/login?redirect='+req.route.path);
+    console.log(req.url);
+    res.redirect('/login?redirect='+req.url);
 }

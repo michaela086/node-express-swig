@@ -1,6 +1,7 @@
 var local_users = [
-    { id: 1, username: 'mike', password: 'pass', email: 'bob@example.com', admin: false }
-  , { id: 2, username: 'admin', password: 'pass', email: 'joe@example.com', admin: true }
+    { id: 1, username: 'mike', password: 'pass', email: 'mike@example.com' }
+  , { id: 2, username: 'drew', password: 'pass', email: 'drew@example.com' }
+  , { id: 3, username: 'admin', password: 'pass', email: 'joe@example.com' }
 ];
 
 function findById(id, fn) {
