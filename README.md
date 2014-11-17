@@ -5,6 +5,5 @@ This is a node start-up project that i use when starting a new project.
 - [Foundation 5](http://foundation.zurb.com/docs/)
 
 ## Usage
-- clone this repo
 - npm install
 - node app.js

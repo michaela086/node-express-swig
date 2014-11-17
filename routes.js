@@ -40,7 +40,6 @@ app.post('/login',
         failureFlash: true 
     }), function(req, res) {
         var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
-        console.log(redirectUrl);
         res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
     }
 );
@@ -70,6 +69,5 @@ function getUrlVars(url) {
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
-    console.log(req.url);
     res.redirect('/login?redirect='+req.url);
 }
