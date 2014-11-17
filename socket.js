@@ -8,7 +8,6 @@ io.sockets.on('connection', function (socket) {
 		socket.join(socket.room);
 		socket.emit('updatechat', 'SERVER', 'you have connected to ' + socket.room);
 		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has connected to this room');
-		io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
 		socket.emit('updaterooms', rooms, socket.room);
 		if (usernames[socket.room] === undefined) {
 			usernames[socket.room] = [];
@@ -18,6 +17,7 @@ io.sockets.on('connection', function (socket) {
 				usernames[socket.room].push(socket.username);
 			}
 		}
+		updateUsers(socket.room);
 	});
 	
 	socket.on('sendchat', function (data) {
@@ -27,7 +27,6 @@ io.sockets.on('connection', function (socket) {
 	socket.on('disconnect', function(){
 		io.sockets.emit('updateusers', usernames);
 		io.sockets.in(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-		io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
 		socket.leave(socket.room);		
 		if (socket.username !== undefined) {
 			var user_index = usernames[socket.room].indexOf(socket.username);
@@ -35,10 +34,14 @@ io.sockets.on('connection', function (socket) {
 			    usernames[socket.room].splice(user_index, 1);
 			}
 		}
-		io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
+		updateUsers(socket.room);
 	});
 
 });
+
+function updateUsers(room) {
+	io.sockets.in(room).emit('updateusers', usernames[room]);
+}
 
 var indexOf = function(needle) {
     if(typeof Array.prototype.indexOf === 'function') {
