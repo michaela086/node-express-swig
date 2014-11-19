@@ -9,6 +9,7 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/logout', function(req, res) {
+    req.session.username = '';
     req.logout();
     res.redirect('/');
 });
@@ -23,33 +24,59 @@ app.get('/', ensureAuthenticated, function(req, res) {
     });
 });
 
+app.get('/signup', function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        console.log('signup');
+        res.render('signup', {
+            globalData: globalData,
+            title: 'My Chat'
+        });
+    });
+});
+
 app.get('/*', ensureAuthenticated, function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('chat', {
             globalData: globalData,
             title: 'My Chat',
-            username: req.user.username,
             chat_room: req.params[0]
         });
     });
 });
 
 app.post('/login',
-    passport.authenticate('local', { 
-        failureRedirect: '/login', 
-        failureFlash: true 
+    passport.authenticate('login', {
+        failureRedirect: '/login',
+        failureFlash : true  
     }), function(req, res) {
         var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
         res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
     }
 );
 
+app.post('/login-name', function(req, res) {
+    req.session.username = req.body.name;
+    var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
+    res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
+});
+
+app.post('/signup', passport.authenticate('signup', {
+    successRedirect: '/home',
+    failureRedirect: '/signup',
+    failureFlash : true  
+}));
+
+
 function loadGlobalData(req, cb) {
     var data = {};
-    if (req.user && req.user.username) {
-        data.user = req.user.username;
+    if (req.session.username != undefined && req.session.username != '') {
+        data.user = req.session.username;
     } else {
-        data.user = '';
+        if (req.user && req.user.username) {
+            data.user = req.user.username;
+        } else {
+            data.user = '';
+        }
     }
     data.server = req.headers.host;
     return cb(data);
@@ -68,6 +95,8 @@ function getUrlVars(url) {
 }
 
 function ensureAuthenticated(req, res, next) {
+    console.log(req.session.username);
+    if (req.session.username != undefined && req.session.username != '') { return next(); }
     if (req.isAuthenticated()) { return next(); }
     res.redirect('/login?redirect='+req.url);
 }

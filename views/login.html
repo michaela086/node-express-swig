@@ -28,9 +28,19 @@
 		            <input type="submit" class="button tiny success" value="Login" tabindex="3"/>
 		        </div>
 		    </form>
+		    <form id="top-nav-login" action="login-name" method="post">
+		        <div class="row">
+		            <label>Name only</label>
+		            <input type="text" name="name" tabindex="3"/>
+		        </div>
+		        <div class="row">
+		            <input type="submit" class="button tiny success" value="Login with name" tabindex="3"/>
+		        </div>
+		    </form>
+	        <div class="row">
+	            <a href="/signup"><input type="submit" class="button tiny" value="Signup" tabindex="3"/></a>
+	        </div>
 	    </div>
-	    <div class="large-5 columns">
-        </div>
 
     </div>
 {% endblock %}

@@ -12,7 +12,7 @@
 <script>
 	var socket = io.connect('http://{{ globalData.server }}');
 	data = {
-		username: '{{ username }}',
+		username: '{{ globalData.user }}',
 		chatHash: '{{ chat_room }}'
 	};
 	socket.emit('adduser', data);
