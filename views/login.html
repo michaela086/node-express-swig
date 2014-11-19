@@ -8,29 +8,26 @@
 
 {% block content %}
 	{% if message != '' %}
-	<div data-alert class="alert-box alert round">
-	    {{ message }}
-	    <a href="#" class="close">&times;</a>
-	</div>
+		<div class="alert alert-danger" role="alert">
+		  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+		  <span class="sr-only">Error:</span>
+		  {{ message }}
+		</div>
 	{% endif %}
-    <div class="row">
-        <div class="large-4 large-offset-4 columns">
-	        <form id="top-nav-login" action="login" method="post">
-		        <div class="row">
-		            <label>Username</label>
-		            <input type="text" name="username" tabindex="1"/>
-		        </div>
-		        <div class="row">
-		            <label>Password</label>
-		            <input type="password" name="password" tabindex="2"/>
-		        </div>
-		        <div class="row">
-		            <input type="submit" class="button tiny success" value="Login" tabindex="3"/>
-		        </div>
-		    </form>
-	    </div>
-	    <div class="large-5 columns">
-        </div>
 
-    </div>
+      <form class="form-signin" id="top-nav-login" action="login" method="post">
+
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="inputUsername" class="sr-only">Username</label>
+        <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
 {% endblock %}

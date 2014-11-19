@@ -13,7 +13,22 @@ var LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session')
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var serverport = 3000;
+var serverport = 5555;
+
+var mysql = require('mysql');
+var pool  = mysql.createPool({
+  connectionLimit : 20,
+  host            : 'localhost',
+  user            : 'clientlogin',
+  password        : 'not4porn@all',
+  database        : 'db_auction'
+});
+
+pool.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
+  if (err) throw err;
+
+  console.log('The solution is: ', rows[0].solution);
+});
 
 swig.setDefaults({ cache: false });
 
@@ -41,6 +56,6 @@ eval(fs.readFileSync(__dirname + '/passport.js')+'');
 eval(fs.readFileSync(__dirname + '/routes.js')+'');
 eval(fs.readFileSync(__dirname + '/socket.js')+'');
 
-console.log('Application Started on http://localhost:'+serverport+'/');
+console.log('Application Started on http://localhost:'+serverport);
 
 server.listen(serverport);

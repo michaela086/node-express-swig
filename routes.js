@@ -17,21 +17,37 @@ app.get('/', ensureAuthenticated, function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('index', {
             globalData: globalData,
-            title: 'My Chat',
-            chat_room: req.params[0]
+            title: 'My Auction',
         });
     });
 });
 
-app.get('/*', ensureAuthenticated, function(req, res) {
+app.get('/auction/*', function(req, res) {
     loadGlobalData(req, function (globalData) {
-        res.render('chat', {
-            globalData: globalData,
-            title: 'My Chat',
-            username: req.user.username,
-            chat_room: req.params[0]
+        loadAuctionData(req, function (auctionData) {
+            if (req.params[0]) {
+                res.render('auction', {
+                    globalData: globalData,
+                    auctionData: auctionData,
+                    title: 'My Auction'
+                });
+            } else {
+                res.render('error', {
+                    globalData: globalData,
+                    title: 'My Auction',
+                    message: 'Invalid auction'
+                });
+            }
         });
     });
+});
+
+app.post('/bid', ensureAuthenticated, function(req, res) {
+    res.send('success');
+    console.log(req.body);
+    bid = req.body.bid;
+    console.log(req.body.auctionId);
+    io.sockets.in(req.body.auctionId).emit('updateAuctionData', bid);
 });
 
 app.post('/login',
@@ -40,7 +56,7 @@ app.post('/login',
         failureFlash: true 
     }), function(req, res) {
         var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
-        res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
+        res.redirect(redirectUrl != undefined ? redirectUrl : '/');
     }
 );
 
@@ -52,6 +68,13 @@ function loadGlobalData(req, cb) {
         data.user = '';
     }
     data.server = req.headers.host;
+    return cb(data);
+}
+
+function loadAuctionData(req, cb) {
+    var data = {};
+    data.id = req.params[0];
+    data.bid = '324';
     return cb(data);
 }
 
@@ -68,6 +91,7 @@ function getUrlVars(url) {
 }
 
 function ensureAuthenticated(req, res, next) {
+    return next();
     if (req.isAuthenticated()) { return next(); }
     res.redirect('/login?redirect='+req.url);
 }
