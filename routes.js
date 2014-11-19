@@ -34,6 +34,19 @@ app.get('/signup', function(req, res) {
     });
 });
 
+app.get('/auth/google', passport.authenticate('google', { 
+    scope: ['https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email']
+    }
+), function(req, res) {
+});
+
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), function(req, res) {
+    req.session.username = req.user.displayName;
+    console.log(req.headers.referer);
+    res.redirect('/');
+});
+
 app.get('/*', ensureAuthenticated, function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('chat', {
@@ -95,7 +108,6 @@ function getUrlVars(url) {
 }
 
 function ensureAuthenticated(req, res, next) {
-    console.log(req.session.username);
     if (req.session.username != undefined && req.session.username != '') { return next(); }
     if (req.isAuthenticated()) { return next(); }
     res.redirect('/login?redirect='+req.url);
