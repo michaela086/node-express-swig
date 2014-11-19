@@ -1,3 +1,26 @@
+app.post('/login',
+    passport.authenticate('login', {
+        failureRedirect: '/login',
+        failureFlash : true  
+    }), function(req, res) {
+        var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
+        res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
+    }
+);
+
+app.post('/login-name', function(req, res) {
+    console.log(req.body.name);
+    req.session.username = req.body.name;
+    var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
+    res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
+});
+
+app.post('/signup', passport.authenticate('signup', {
+    successRedirect: '/home',
+    failureRedirect: '/signup',
+    failureFlash : true  
+}));
+
 app.get('/login', function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('login', {
@@ -43,7 +66,6 @@ app.get('/auth/google', passport.authenticate('google', {
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), function(req, res) {
     req.session.username = req.user.displayName;
-    console.log(req.headers.referer);
     res.redirect('/');
 });
 
@@ -56,29 +78,6 @@ app.get('/*', ensureAuthenticated, function(req, res) {
         });
     });
 });
-
-app.post('/login',
-    passport.authenticate('login', {
-        failureRedirect: '/login',
-        failureFlash : true  
-    }), function(req, res) {
-        var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
-        res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
-    }
-);
-
-app.post('/login-name', function(req, res) {
-    req.session.username = req.body.name;
-    var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
-    res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
-});
-
-app.post('/signup', passport.authenticate('signup', {
-    successRedirect: '/home',
-    failureRedirect: '/signup',
-    failureFlash : true  
-}));
-
 
 function loadGlobalData(req, cb) {
     var data = {};

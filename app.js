@@ -13,14 +13,14 @@ var LocalStrategy = require('passport-local').Strategy;
 var expressSession = require('express-session');
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var serverport = 3000;
+
+var server_config = require('./server_config.js');
 
 var initPassport = require('./passport/init');
 initPassport(passport);
 
-var dbConfig = require('./db.js');
 var mongoose = require('mongoose');
-mongoose.connect(dbConfig.url);
+mongoose.connect('mongodb://'+server_config.serverip+'/passport');
 
 swig.setDefaults({ cache: false });
 app.engine('html', swig.renderFile);
@@ -41,10 +41,9 @@ app.use(passport.session());
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 eval(fs.readFileSync(__dirname + '/routes.js')+'');
 eval(fs.readFileSync(__dirname + '/socket.js')+'');
 
-console.log('Application Started on http://localhost:'+serverport+'/');
+console.log('Application Started on http://'+server_config.serverip+':'+server_config.serverport+'/');
 
-server.listen(serverport);
+server.listen(server_config.serverport);

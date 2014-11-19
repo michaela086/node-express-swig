@@ -2,6 +2,7 @@ var LocalStrategy   = require('passport-local').Strategy;
 var User = require('../models/user');
 var bCrypt = require('bcrypt-nodejs');
 var util = require('util');
+var server_config = require('../server_config.js');
 
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var GOOGLE_CLIENT_ID = '636967012649-n4d5fs72d43ksmupf4t653kgre6p9llu.apps.googleusercontent.com';
@@ -41,7 +42,7 @@ module.exports = function(passport){
     passport.use('google', new GoogleStrategy({
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://127.0.0.1:3000/auth/google/callback"
+        callbackURL: 'http://'+server_config.serverip+':'+server_config.serverport+'/auth/google/callback'
       },
       function(accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
