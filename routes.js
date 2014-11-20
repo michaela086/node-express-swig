@@ -44,9 +44,7 @@ app.get('/auction/*', function(req, res) {
 
 app.post('/bid', ensureAuthenticated, function(req, res) {
     res.send('success');
-    console.log(req.body);
     bid = req.body.bid;
-    console.log(req.body.auctionId);
     io.sockets.in(req.body.auctionId).emit('updateAuctionData', bid);
 });
 
@@ -67,7 +65,7 @@ function loadGlobalData(req, cb) {
     } else {
         data.user = '';
     }
-    data.server = req.headers.host;
+    data.server = server_config.serverip;
     return cb(data);
 }
 

@@ -6,7 +6,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('watchingAuction', function(auction) {
 		socket.auction = auction;
 		socket.join(auction);
-		io.sockets.in(auction).emit('updateAuctionData', 'connected');
+		io.sockets.in(auction).emit('updateViewersData', 'connected');
 		if (watching[auction] == undefined) {
 			watching[auction] = [];
 			watching[auction].push(socket.id);			

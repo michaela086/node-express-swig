@@ -10,39 +10,28 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var flash = require('connect-flash');
 var LocalStrategy = require('passport-local').Strategy;
-var session = require('express-session')
+var expressSession = require('express-session');
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var serverport = 5555;
 
-var mysql = require('mysql');
-var pool  = mysql.createPool({
-  connectionLimit : 20,
-  host            : 'localhost',
-  user            : 'clientlogin',
-  password        : 'not4porn@all',
-  database        : 'db_auction'
-});
+var server_config = require('./server_config.js');
 
-pool.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
-  if (err) throw err;
+var initPassport = require('./passport/init');
+initPassport(passport);
 
-  console.log('The solution is: ', rows[0].solution);
-});
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://'+server_config.serverip+'/passport');
 
 swig.setDefaults({ cache: false });
-
 app.engine('html', swig.renderFile);
-
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 app.set('view cache', false);
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({
+app.use(expressSession({
     secret: "32OIF32OIH32OIFH23IOFH2O3IHFO23I",
     saveUninitialized: true, // (default: true)
     resave: true, // (default: true)
@@ -52,10 +41,9 @@ app.use(passport.session());
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
-eval(fs.readFileSync(__dirname + '/passport.js')+'');
 eval(fs.readFileSync(__dirname + '/routes.js')+'');
 eval(fs.readFileSync(__dirname + '/socket.js')+'');
 
-console.log('Application Started on http://localhost:'+serverport);
+console.log('Application Started on http://'+server_config.serverip+':'+server_config.serverport+'/');
 
-server.listen(serverport);
+server.listen(server_config.serverport);

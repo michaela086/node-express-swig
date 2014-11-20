@@ -55,7 +55,7 @@
         });
 
         socket.on('updateAuctionData', function (auctionData) {
-            console.log(auctionData);
+            $('#auctionBid').val(auctionData);
         });
 
         function placeBid() {
@@ -66,11 +66,11 @@
               type: "POST",
               url: '/bid',
               data: data,
-              success: function(success) {
-                if (success != 'success') {
-                    console.log('error');
+              success: function(data) {
+                if (data != 'success') {
+                    console.log(data);
                 } else {
-                    console.log(success);
+                    console.log('successfully places a bid');
                 }
               }
             });
