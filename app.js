@@ -14,13 +14,21 @@ var expressSession = require('express-session');
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+var Auction = require('./models/auction');
+
 var server_config = require('./server_config.js');
 
 var initPassport = require('./passport/init');
 initPassport(passport);
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://'+server_config.serverip+'/passport');
+var mongooseOptions = {
+  db: { native_parser: true },
+  server: { poolSize: 10 },
+  user: '',
+  pass: ''
+}
+mongoose.connect('mongodb://'+server_config.serverip+'/passport', mongooseOptions);
 
 swig.setDefaults({ cache: false });
 app.engine('html', swig.renderFile);

@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+    {% parent %}    
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+      <div class="col-md-8">
+        <span>{{ autionData.name }}</span>
+        <div class="row">
+          <div class="col-md-6">
+          </div>
+          <div class="col-md-6">
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">Auction ID</label>
+                <div class="col-md-8">
+                  <input type="email" class="form-control" id="auctionId" value="{{ auctionData.id }}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">Current Bid</label>
+                <div class="col-md-8">
+                  <input type="email" class="form-control" id="auctionBid" value="{{ auctionData.current_bid }}">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="auctionNewBid">
+                </div>
+                <button type="button" class="btn btn-default" id="placeBid">Place Bid</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <span id="currentWatchers"></span>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block loadlast %}
+    {% parent %}
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+
+        var socket = io.connect('http://{{ globalData.server }}');
+        
+        $(document).ready(function() {
+            socket.emit('watchingAuction', $('#auctionId').val());
+        });
+        socket.on('updateAuctionData', function (auctionData, message) {
+            $('#auctionBid').val(auctionData);
+            toastr.info(message)
+        });
+        socket.on('updateCurrentWatchers', function (currentWatchers) {
+            $('#currentWatchers').html(currentWatchers);
+        });
+    </script>
+    {% if globalData.loggedIn %}
+	    <script type="text/javascript">
+	        $('#placeBid').click(function() {
+	            data = {};
+	            data.auctionId = $('#auctionId').val();
+	            data.newBid = $('#auctionNewBid').val();
+	            $.ajax({
+	              type: "POST",
+	              url: '/bid',
+	              data: data,
+	              success: function(data) {
+	                if (data.status != 'success') {
+	                    toastr.error(data.message)
+	                }
+	              }
+	            });
+	        });
+	    </script>
+	{% else %}
+		<script type="text/javascript">
+	        $('#placeBid').click(function() {
+	            $('#loginModal').modal({show: true});
+	        });
+	    </script>
+    {% endif %}
+
+{% endblock %}

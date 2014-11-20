@@ -7,27 +7,11 @@ app.post('/login',
     }
 );
 
-app.post('/login-name', function(req, res) {
-    req.session.username = req.body.name;
-    res.redirect(getLastUrl(req));
-});
-
 app.post('/signup', passport.authenticate('signup', {
-    successRedirect: '/home',
+    successRedirect: '/',
     failureRedirect: '/signup',
     failureFlash : true  
 }));
-
-app.get('/login', function(req, res) {
-    req.session.lastUrl = 'login';
-    loadGlobalData(req, function (globalData) {
-        res.render('login', {
-            globalData: globalData,
-            title: 'Login',
-            message: req.flash('error')
-        });
-    });
-});
 
 app.get('/logout', function(req, res) {
     req.session.username = '';
@@ -39,7 +23,7 @@ app.get('/', function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('index', {
             globalData: globalData,
-            title: 'My Chat',
+            title: 'Auction',
             chat_room: req.params[0]
         });
     });
@@ -66,36 +50,85 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
     res.redirect(getLastUrl(req));
 });
 
-app.get('/*', function(req, res) {
-    if (req.params[0] != 'favicon.ico') {
-        req.session.lastUrl = req.params[0];
-    }
+
+app.get('/auction/*', function(req, res) {
+    req.session.lastUrl = req.url;
     loadGlobalData(req, function (globalData) {
-        res.render('chat', {
-            globalData: globalData,
-            title: 'My Chat',
-            chat_room: req.params[0]
+        Auction.findOne({ 'id' :  req.params[0] }, function(err, auctionData) {
+            if (auctionData) {
+                res.render('auction', {
+                    loginRequired: true,
+                    globalData: globalData,
+                    auctionData: auctionData,
+                    title: 'My Auction'
+                });
+            } else {
+                res.render('error', {
+                    globalData: globalData,
+                    title: 'My Auction',
+                    message: 'Invalid auction'
+                });
+            }
         });
     });
+});
+
+app.post('/bid', function(req, res) {
+    if (req.session.loggedIn) {
+        newBid = req.body.newBid;
+        Auction.findOne({ 'id' :  req.body.auctionId }, function(err, auctionData) {
+            if (auctionData) {
+                if (newBid > auctionData.current_bid) {
+                    auctionData.current_bid = newBid;
+                    auctionData.save(function(err) {
+                        if (err){
+                            res.send({ status: 'error', message: err });
+                        }
+                        res.send({ status: 'success', message: '' });
+                        io.sockets.in(req.body.auctionId).emit('updateAuctionData', req.body.newBid, req.session.username + ' placed a bid of ' + newBid);
+                    });
+                } else {
+                    res.send({ status: 'error', message: req.session.username + ' placed a invalid bid of ' + newBid });
+                }
+            }
+        });
+    } else {
+        res.send({status: 'faled', message: 'User is not logged in'});
+    }
 });
 
 function loadGlobalData(req, cb) {
     var data = {};
     if (req.session.username != undefined && req.session.username != '') {
         data.user = req.session.username;
+        data.loggedIn = true;
     } else {
         if (req.user && req.user.username) {
             data.user = req.user.username;
+            data.loggedIn = true;
         } else {
             data.user = '';
+            data.loggedIn = false;
         }
     }
+    if (data.loggedIn) { req.session.loggedIn = true; } else { req.session.loggedIn = false; }
     data.server = req.headers.host;
     return cb(data);
 }
 
+function isLoggedIn(req, cb) {
+    var data = {};
+    if (req.session.loggedIn) {
+        data.loggedIn = true;
+    } else {
+        data.loggedIn = false;
+    }    
+    return cb(data);
+}
+
 function getLastUrl(req) {
-    return (req.session.lastUrl != undefined ? '/'+req.session.lastUrl : '/');
+    lastUrl = req.session.lastUrl != undefined ? req.session.lastUrl : '/';
+    return (lastUrl);
 }
 
 function getUrlVars(url) {
@@ -111,7 +144,6 @@ function getUrlVars(url) {
 }
 
 function ensureAuthenticated(req, res, next) {
-    if (req.session.username != undefined && req.session.username != '') { return next(); }
     if (req.isAuthenticated()) { return next(); }
-    res.redirect('/login?redirect='+req.url);
+    res.redirect('/login');
 }
