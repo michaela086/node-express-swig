@@ -49,6 +49,8 @@ app.use(passport.session());
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
+eval(fs.readFileSync(__dirname + '/admin/signup.js')+'');
+eval(fs.readFileSync(__dirname + '/admin/routes.js')+'');
 eval(fs.readFileSync(__dirname + '/routes.js')+'');
 eval(fs.readFileSync(__dirname + '/socket.js')+'');
 

@@ -50,7 +50,6 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
     res.redirect(getLastUrl(req));
 });
 
-
 app.get('/auction/*', function(req, res) {
     req.session.lastUrl = req.url;
     loadGlobalData(req, function (globalData) {

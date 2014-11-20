@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+		<div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                      {% if auctionData %}
+                        <p>Auction {{ auctionData.id }}</p>
+                        <table class="table">
+					      <thead>
+					        <tr>
+					          <th>id</th>
+					          <th>starting bid</th>
+					          <th>current bid</th>
+					          <th>buy it now</th>
+					        </tr>
+					      </thead>
+					      <tbody>
+					        {% for auction in auctions %}
+						        <tr>
+						          <td><a href="/auction/{{ auction.id }}">{{ auction.id }}</a></td>
+						          <td>{{ auction.starting_bid }}</td>
+						          <td>{{ auction.current_bid }}</td>
+						          <td>{{ auction.buy_it_now }}</td>
+						        </tr>
+                        	{% endfor %}
+					      </tbody>
+					    </table>
+					  {% else %}
+					    <p>Invalid auction Data</p>
+					  {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
