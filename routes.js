@@ -65,7 +65,8 @@ app.get('/auth/google', passport.authenticate('google', {
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), function(req, res) {
     req.session.username = req.user.displayName;
-    res.redirect('/');
+    var redirectUrl = getUrlVars(req.headers.referer);
+    res.redirect(redirectUrl != undefined ? redirectUrl : '/');
 });
 
 app.get('/*', function(req, res) {
