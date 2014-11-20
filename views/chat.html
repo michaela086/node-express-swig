@@ -11,10 +11,12 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
 	var socket = io.connect('http://{{ globalData.server }}');
+	
 	data = {
 		username: '{{ globalData.user }}',
 		chatHash: '{{ chat_room }}'
 	};
+	
 	socket.emit('adduser', data);
 
 	socket.on('updatechat', function (username, data) {
@@ -22,29 +24,38 @@
 	});
 
 	socket.on('updateusers', function (users) {
-		var string = '<ul>';
-		for (i = 0; i < users.length; i++) {
-			string += '<li>'+users[i]+'</li>';
+		if (users) {
+			var string = '<ul>';
+			for (i = 0; i < users.length; i++) {
+				string += '<li>'+users[i]+'</li>';
+			}
+			string += '</ul>';
+			$('#userslist').html(string);
 		}
-		string += '</ul>';
-		$('#userslist').html(string);
 	});
+
+	function forceLogin() {
+	    $('#signinModal').foundation('reveal', 'open');
+	}
 	
 	$(function(){
-		$('#datasend').click( function() {
-			var message = $('#data').val();
-			$('#data').val('');
-			var data = { message: message, username: '{{ globalData.user }}', room:'{{ chat_room }}' };
-			socket.emit('sendchat', data);
-		});
-
-		$('#data').keypress(function(e) {
-			if(e.which == 13) {
-				$(this).blur();
-				$('#datasend').focus().click();
-				$('#data').focus();
-			}
-		});
+		if (data.username == '') {
+			forceLogin();
+		} else {
+			$('#datasend').click( function() {
+				var message = $('#data').val();
+				$('#data').val('');
+				var data = { message: message, username: '{{ globalData.user }}', room:'{{ chat_room }}' };
+				socket.emit('sendchat', data);
+			});
+			$('#data').keypress(function(e) {
+				if(e.which == 13) {
+					$(this).blur();
+					$('#datasend').focus().click();
+					$('#data').focus();
+				}
+			});
+		}
 	});
 
 </script>
@@ -58,6 +69,48 @@
   	<p>Connected Users</p>
     <div id="userslist"></div>
   </div>
+</div>
+
+<div id="signinModal" class="reveal-modal" data-reveal>
+  {% if message != '' %}
+	<div data-alert class="alert-box alert round">
+	    {{ message }}
+	    <a href="#" class="close">&times;</a>
+	</div>
+	{% endif %}
+    <div class="row">
+        <div class="large-4 large-offset-4 columns">
+	        <form id="top-nav-login" action="login" method="post">
+		        <div class="row">
+		            <label>Username</label>
+		            <input type="text" name="username" tabindex="1"/>
+		        </div>
+		        <div class="row">
+		            <label>Password</label>
+		            <input type="password" name="password" tabindex="2"/>
+		        </div>
+		        <div class="row">
+		            <input type="submit" class="button tiny success" value="Login" tabindex="3"/>
+		        </div>
+		    </form>
+		    <form id="top-nav-login" action="login-name" method="post">
+		        <div class="row">
+		            <label>Name only</label>
+		            <input type="text" name="name" tabindex="3"/>
+		        </div>
+		        <div class="row">
+		            <input type="submit" class="button tiny success" value="Login with name" tabindex="3"/>
+		        </div>
+		    </form>
+	        <div class="row">
+		    	<a href="/auth/google" class="button tiny warning">Sign In with Google</a>
+	        </div>
+	        <div class="row">
+	            <a href="/signup"><input type="submit" class="button tiny" value="Signup" tabindex="3"/></a>
+	        </div>
+	    </div>
+
+    </div>
 </div>
 
  	<style>

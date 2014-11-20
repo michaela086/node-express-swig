@@ -3,16 +3,15 @@ app.post('/login',
         failureRedirect: '/login',
         failureFlash : true  
     }), function(req, res) {
-        var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
+        var redirectUrl = getUrlVars(req.headers.referer);
         res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
     }
 );
 
 app.post('/login-name', function(req, res) {
-    console.log(req.body.name);
     req.session.username = req.body.name;
-    var redirectUrl = getUrlVars(req.headers.referer)["redirect"];
-    res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
+    var redirectUrl = getUrlVars(req.headers.referer);
+    res.redirect(redirectUrl != undefined ? redirectUrl : '/');
 });
 
 app.post('/signup', passport.authenticate('signup', {
@@ -37,7 +36,7 @@ app.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
-app.get('/', ensureAuthenticated, function(req, res) {
+app.get('/', function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('index', {
             globalData: globalData,
@@ -69,7 +68,7 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
     res.redirect('/');
 });
 
-app.get('/*', ensureAuthenticated, function(req, res) {
+app.get('/*', function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('chat', {
             globalData: globalData,
