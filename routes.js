@@ -3,15 +3,13 @@ app.post('/login',
         failureRedirect: '/login',
         failureFlash : true  
     }), function(req, res) {
-        var redirectUrl = getUrlVars(req.headers.referer);
-        res.redirect(redirectUrl != undefined ? redirectUrl : '/public');
+        res.redirect(getLastUrl(req));
     }
 );
 
 app.post('/login-name', function(req, res) {
     req.session.username = req.body.name;
-    var redirectUrl = getUrlVars(req.headers.referer);
-    res.redirect(redirectUrl != undefined ? redirectUrl : '/');
+    res.redirect(getLastUrl(req));
 });
 
 app.post('/signup', passport.authenticate('signup', {
@@ -21,6 +19,7 @@ app.post('/signup', passport.authenticate('signup', {
 }));
 
 app.get('/login', function(req, res) {
+    req.session.lastUrl = 'login';
     loadGlobalData(req, function (globalData) {
         res.render('login', {
             globalData: globalData,
@@ -48,7 +47,6 @@ app.get('/', function(req, res) {
 
 app.get('/signup', function(req, res) {
     loadGlobalData(req, function (globalData) {
-        console.log('signup');
         res.render('signup', {
             globalData: globalData,
             title: 'My Chat'
@@ -65,11 +63,13 @@ app.get('/auth/google', passport.authenticate('google', {
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), function(req, res) {
     req.session.username = req.user.displayName;
-    var redirectUrl = getUrlVars(req.headers.referer);
-    res.redirect(redirectUrl != undefined ? redirectUrl : '/');
+    res.redirect(getLastUrl(req));
 });
 
 app.get('/*', function(req, res) {
+    if (req.params[0] != 'favicon.ico') {
+        req.session.lastUrl = req.params[0];
+    }
     loadGlobalData(req, function (globalData) {
         res.render('chat', {
             globalData: globalData,
@@ -92,6 +92,10 @@ function loadGlobalData(req, cb) {
     }
     data.server = req.headers.host;
     return cb(data);
+}
+
+function getLastUrl(req) {
+    return (req.session.lastUrl != undefined ? '/'+req.session.lastUrl : '/');
 }
 
 function getUrlVars(url) {
