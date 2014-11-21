@@ -48,7 +48,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <!--<li><a href="../navbar/">Default</a></li>-->
-            {% if globalData.loggedIn %}
+            {% if globalData.user %}
 
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ globalData.user }} <span class="caret"></span></a>
@@ -80,7 +80,7 @@
             <script src="/js/toastr.js"></script>
         {% endblock %}
         
-        {% if not globalData.loggedIn %}
+        {% if not globalData.user %}
             <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
             
             <!-- Modal -->

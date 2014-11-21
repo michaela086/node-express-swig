@@ -15,7 +15,6 @@ app.post('/signup', passport.authenticate('signup', {
 
 app.get('/logout', function(req, res) {
     req.session.user = '';
-    req.session.loggedIn = false;
     req.logout();
     res.redirect('/');
 });
@@ -95,7 +94,7 @@ app.get('/auction/*', function(req, res) {
 });
 
 app.post('/bid', function(req, res) {
-    if (req.session.loggedIn) {
+    if (req.session.user) {
         newBid = req.body.newBid;
         Auction.findOne({ 'id' : req.body.auctionId }, function(err, auctionData) {
             if (auctionData) {
@@ -122,35 +121,15 @@ app.post('/bid', function(req, res) {
 
 function loadGlobalData(req, cb) {
     var data = {};
-    if (req.session.user != undefined && req.session.user != '') {
+    if (req.session.user != undefined) {
         data.user = req.session.user;
-        data.loggedIn = true;
     } else {
-        if (req.user && req.user.username) {
-            data.user = req.user.username;
-            data.loggedIn = true;
-        } else if (req.user && req.user.displayName) {
-            data.user = req.user.username;
-            data.loggedIn = true;
-        } else {
-            data.user = '';
-            data.loggedIn = false;
-        }
+        data.user = '';
     }
-    if (data.user) { req.session.user = data.user; } else { req.session.user = ''; }
-    if (data.loggedIn) { req.session.loggedIn = true; } else { req.session.loggedIn = false; }
     data.name = 'WebsiteName';
     data.server = req.headers.host;
-    return cb(data);
-}
-
-function isLoggedIn(req, cb) {
-    var data = {};
-    if (req.session.loggedIn) {
-        data.loggedIn = true;
-    } else {
-        data.loggedIn = false;
-    }    
+    console.log(req.user);
+    console.log(data);
     return cb(data);
 }
 
