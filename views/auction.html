@@ -3,49 +3,154 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block head %}
-    {% parent %}    
+    {% parent %}
+    <link rel="stylesheet" href="//blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-image-gallery.min.css">
+    <style type="text/css">
+      .gallery-main {
+        width: 100%;
+      }
+      .gallery-thumb {
+        width: 100%;
+      }
+      .thumbnail-wrapper {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+      .control-label {
+        text-align: right;
+      }
+      .hide {
+        display: none;
+      }
+    </style>
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-      <div class="col-md-8">
-        <span>{{ autionData.name }}</span>
-        <div class="row">
-          <div class="col-md-6">
-          </div>
-          <div class="col-md-6">
-            <div class="form-horizontal">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">Auction ID</label>
-                <div class="col-md-8">
-                  <input type="email" class="form-control" id="auctionId" value="{{ auctionData.id }}">
+    <div id="blueimp-gallery" class="blueimp-gallery" data-use-bootstrap-modal="false">
+        <!-- The container for the modal slides -->
+        <div class="slides"></div>
+        <!-- Controls for the borderless lightbox -->
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+        <!-- The modal dialog, which will be used to wrap the lightbox content -->
+        <div class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body next"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left prev">
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                            Previous
+                        </button>
+                        <button type="button" class="btn btn-primary next">
+                            Next
+                            <i class="glyphicon glyphicon-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">Current Bid</label>
-                <div class="col-md-8">
-                  <input type="email" class="form-control" id="auctionBid" value="{{ auctionData.current_bid }}">
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="auctionNewBid">
-                </div>
-                <button type="button" class="btn btn-default" id="placeBid">Place Bid</button>
-              </div>
             </div>
+        </div>
+    </div>
+
+    <!--IMAGES-->
+    <div class="row">
+      <div class="col-sm-8 col-xs-12">
+        <div class="row">
+          <div class="col-xs-12">
+            {% for image in images %}
+                {% if loop.first %}
+                  <a href="{{ image.full }}" title="{{ image.title }}" data-gallery>
+                      <img src="{{ image.thumbnail }}" alt="{{ image.alt }}" class="gallery-main">
+                  </a>
+                {% endif %}
+            {% endfor %}
           </div>
         </div>
+            <div class="row thumbnail-wrapper">
+              {% for image in images %}
+                  {% if not loop.first %}
+                    <div class="col-xs-4">
+                      <a href="{{ image.full }}" title="{{ image.title }}" data-gallery>
+                          <img src="{{ image.thumbnail }}" alt="{{ image.alt }}" class="gallery-thumb">
+                      </a>
+                    </div>
+                  {% endif %}
+              {% endfor %}
+            </div>
       </div>
-      <div class="col-md-4">
-        <span id="currentWatchers"></span>
+      <!--END OF IMAGES-->
+
+      <!--AUCTION DETAILS-->
+      <div class="col-sm-4 col-xs-12">
+        
+        <form class="form-horizontal" role="form">
+
+          <div class="form-group">
+            <label for="inputEmail3" class="col-sm-4 col-xs-5 control-label">Auction ID</label>
+            <div class="col-sm-8 col-xs-7">
+              <input type="text" class="form-control" id="auctionId" value="{{ auctionData.id }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputEmail3" class="col-sm-4 col-xs-5 control-label">Current Bid</label>
+            <div class="col-sm-8 col-xs-7">
+              <input type="email" class="form-control" id="auctionBid" value="{{ auctionData.current_bid }}">
+            </div>
+          </div>
+
+          {% if auctionData.current_bid < auctionData.buy_it_now %}
+          <div class="form-group" id="buy_it_now_wrapper">
+            <label for="inputEmail3" class="col-sm-4 col-xs-5 control-label">Buy it now</label>
+            <div class="col-sm-8 col-xs-7">
+              <input type="email" class="form-control" id="buy_it_now" value="{{ auctionData.buy_it_now }}">
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="form-group">
+            <label for="inputEmail3" class="col-sm-4 col-xs-5 control-label">Live Watchers</label>
+            <div class="col-sm-8 col-xs-7">
+              <span type="email" class="form-control" id="currentWatchers">1</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputEmail3" class="col-sm-4 col-xs-5 control-label">Buy it now</label>
+            <div class="col-sm-8 col-xs-7">
+              <input type="email" class="form-control" id="buy_it_now" value="">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-md-8">
+              <input type="text" class="form-control" id="auctionNewBid">
+            </div>
+            <button type="button" class="btn btn-default" id="placeBid">Place Bid</button>
+          </div>
+
+        </form>
+        
       </div>
+      <!--END OF AUCTION DETAILS-->
+
     </div>
 
 {% endblock %}
 
 {% block loadlast %}
     {% parent %}
+    <script src="//blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
+    <script src="/js/bootstrap-image-gallery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
 
@@ -61,6 +166,7 @@
         socket.on('updateCurrentWatchers', function (currentWatchers) {
             $('#currentWatchers').html(currentWatchers);
         });
+
     </script>
     {% if globalData.loggedIn %}
 	    <script type="text/javascript">
@@ -74,8 +180,13 @@
 	              data: data,
 	              success: function(data) {
 	                if (data.status != 'success') {
-	                    toastr.error(data.message)
+	                  toastr.error(data.message)
 	                }
+                  if ($('#buy_it_now').val() != '') {
+                    if ($('#auctionBid').val() >= $('#buy_it_now').val()) {
+                      $('#buy_it_now_wrapper').addClass('hide');
+                    }
+                  }
 	              }
 	            });
 	        });

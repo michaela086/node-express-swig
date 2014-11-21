@@ -51,14 +51,26 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
 });
 
 app.get('/auction/*', function(req, res) {
+    console.log(req.url);
     req.session.lastUrl = req.url;
     loadGlobalData(req, function (globalData) {
         Auction.findOne({ 'id' :  req.params[0] }, function(err, auctionData) {
+            Images.find({ 'auctionId': req.params[0] }, function(err, imageData) {
+                console.log('imageData');
+                console.log(imageData);
+            });
+            images = [{full: '/img/imgres-1.jpg', thumbnail: '/img/imgres-1.jpg'},
+                      {full: '/img/imgres-2.jpg', thumbnail: '/img/imgres-2.jpg'},
+                      {full: '/img/imgres-3.jpg', thumbnail: '/img/imgres-3.jpg'},
+                      {full: '/img/imgres-4.jpg', thumbnail: '/img/imgres-4.jpg'},
+                      {full: '/img/imgres-5.jpg', thumbnail: '/img/imgres-5.jpg'}];
+
             if (auctionData) {
                 res.render('auction', {
                     loginRequired: true,
                     globalData: globalData,
                     auctionData: auctionData,
+                    images: images,
                     title: 'My Auction'
                 });
             } else {
@@ -75,7 +87,7 @@ app.get('/auction/*', function(req, res) {
 app.post('/bid', function(req, res) {
     if (req.session.loggedIn) {
         newBid = req.body.newBid;
-        Auction.findOne({ 'id' :  req.body.auctionId }, function(err, auctionData) {
+        Auction.findOne({ 'id' : req.body.auctionId }, function(err, auctionData) {
             if (auctionData) {
                 if (newBid > auctionData.current_bid) {
                     auctionData.current_bid = newBid;
@@ -89,6 +101,8 @@ app.post('/bid', function(req, res) {
                 } else {
                     res.send({ status: 'error', message: req.session.username + ' placed a invalid bid of ' + newBid });
                 }
+            } else {
+                res.send({ status: 'error', message: 'There was an issue placeing a bid of ' + newBid });
             }
         });
     } else {
@@ -111,6 +125,7 @@ function loadGlobalData(req, cb) {
         }
     }
     if (data.loggedIn) { req.session.loggedIn = true; } else { req.session.loggedIn = false; }
+    data.name = 'WebsiteName';
     data.server = req.headers.host;
     return cb(data);
 }

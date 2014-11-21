@@ -1,5 +1,3 @@
-var Auction = require('./models/auction');
-
 app.post('/admin/login',
     passport.authenticate('adminLogin', {
         failureRedirect: '/admin/login',

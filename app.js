@@ -15,6 +15,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 var Auction = require('./models/auction');
+var Images = require('./models/images');
 
 var server_config = require('./server_config.js');
 
