@@ -6,8 +6,7 @@ var util = require('util');
 var server_config = require('../server_config.js');
 
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var GOOGLE_CLIENT_ID = '777419445622-ki49vgoti9vq63q1mh5lro99lk6cs0i2.apps.googleusercontent.com';
-var GOOGLE_CLIENT_SECRET = 'WUtpYK08v-7_9ecPXSElN_7c';
+
 
 module.exports = function(passport){
 
@@ -72,8 +71,8 @@ module.exports = function(passport){
     );
 
     passport.use('google', new GoogleStrategy({
-        clientID: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
+        clientID: server_config.GOOGLE_CLIENT_ID,
+        clientSecret: server_config.GOOGLE_CLIENT_SECRET,
         callbackURL: 'http://'+server_config.serverip+':'+server_config.serverport+'/auth/google/callback'
       },
       function(accessToken, refreshToken, profile, done) {
