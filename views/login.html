@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+  {% parent %}
+  
+{% endblock %}
+
+{% block content %}    
+    {{ message }}
+{% endblock %}
+
+{% block loadlast %}
+  {% parent %}
+  <script type="text/javascript">
+        $(document).ready(function() {
+  		    $('#loginModal').modal({show: true});
+  		});
+  </script>
+{% endblock %}

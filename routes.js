@@ -1,6 +1,6 @@
 app.post('/login',
     passport.authenticate('login', {
-        failureRedirect: '/',
+        failureRedirect: '/login?failed=true',
         failureFlash : true  
     }), function(req, res) {
         res.redirect(getLastUrl(req));
@@ -14,7 +14,8 @@ app.post('/signup', passport.authenticate('signup', {
 }));
 
 app.get('/logout', function(req, res) {
-    req.session.username = '';
+    req.session.user = '';
+    req.session.loggedIn = false;
     req.logout();
     res.redirect('/');
 });
@@ -38,6 +39,15 @@ app.get('/signup', function(req, res) {
     });
 });
 
+app.get('/login', function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('login', {
+            globalData: globalData,
+            title: 'My Chat'
+        });
+    });
+});
+
 app.get('/auth/google', passport.authenticate('google', { 
     scope: ['https://www.googleapis.com/auth/userinfo.profile',
             'https://www.googleapis.com/auth/userinfo.email']
@@ -46,7 +56,7 @@ app.get('/auth/google', passport.authenticate('google', {
 });
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), function(req, res) {
-    req.session.username = req.user.displayName;
+    req.session.user = req.user.displayName;
     res.redirect(getLastUrl(req));
 });
 
@@ -96,10 +106,10 @@ app.post('/bid', function(req, res) {
                             res.send({ status: 'error', message: err });
                         }
                         res.send({ status: 'success', message: '' });
-                        io.sockets.in(req.body.auctionId).emit('updateAuctionData', req.body.newBid, req.session.username + ' placed a bid of ' + newBid);
+                        io.sockets.in(req.body.auctionId).emit('updateAuctionData', req.body.newBid, req.session.user + ' placed a bid of ' + newBid);
                     });
                 } else {
-                    res.send({ status: 'error', message: req.session.username + ' placed a invalid bid of ' + newBid });
+                    res.send({ status: 'error', message: req.session.user + ' placed a invalid bid of ' + newBid });
                 }
             } else {
                 res.send({ status: 'error', message: 'There was an issue placeing a bid of ' + newBid });
@@ -112,8 +122,8 @@ app.post('/bid', function(req, res) {
 
 function loadGlobalData(req, cb) {
     var data = {};
-    if (req.session.username != undefined && req.session.username != '') {
-        data.user = req.session.username;
+    if (req.session.user != undefined && req.session.user != '') {
+        data.user = req.session.user;
         data.loggedIn = true;
     } else {
         if (req.user && req.user.username) {
@@ -127,6 +137,7 @@ function loadGlobalData(req, cb) {
             data.loggedIn = false;
         }
     }
+    if (data.user) { req.session.user = data.user; } else { req.session.user = ''; }
     if (data.loggedIn) { req.session.loggedIn = true; } else { req.session.loggedIn = false; }
     data.name = 'WebsiteName';
     data.server = req.headers.host;
