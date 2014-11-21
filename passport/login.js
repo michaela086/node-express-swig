@@ -6,8 +6,8 @@ var util = require('util');
 var server_config = require('../server_config.js');
 
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var GOOGLE_CLIENT_ID = '636967012649-n4d5fs72d43ksmupf4t653kgre6p9llu.apps.googleusercontent.com';
-var GOOGLE_CLIENT_SECRET = '8yYLJGj102DihEyp6oFxkWQa';
+var GOOGLE_CLIENT_ID = '777419445622-ki49vgoti9vq63q1mh5lro99lk6cs0i2.apps.googleusercontent.com';
+var GOOGLE_CLIENT_SECRET = 'WUtpYK08v-7_9ecPXSElN_7c';
 
 module.exports = function(passport){
 
