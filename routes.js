@@ -1,6 +1,6 @@
 app.post('/login',
     passport.authenticate('login', {
-        failureRedirect: '/login',
+        failureRedirect: '/',
         failureFlash : true  
     }), function(req, res) {
         res.redirect(getLastUrl(req));
@@ -117,6 +117,9 @@ function loadGlobalData(req, cb) {
         data.loggedIn = true;
     } else {
         if (req.user && req.user.username) {
+            data.user = req.user.username;
+            data.loggedIn = true;
+        } else if (req.user && req.user.displayName) {
             data.user = req.user.username;
             data.loggedIn = true;
         } else {
