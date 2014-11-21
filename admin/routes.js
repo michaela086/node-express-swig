@@ -64,6 +64,13 @@ app.get('/admin', ensureAdminAuthenticated, function(req, res) {
     });
 });
 
+app.get('/admin/deleteAuction', ensureAdminAuthenticated, function(req, res) {
+    Auction.remove({ 'id' : req.query.id }, function (err) {
+        if (err) return console.error(err);
+    });
+    res.redirect('/admin/auctions');
+});
+
 app.post('/admin/newAuction', function(req, res) {
     var newAuction = new Auction();
 
@@ -75,7 +82,7 @@ app.post('/admin/newAuction', function(req, res) {
 
     newAuction.save(function(err) {
         if (err){
-            console.log('Error in Saving auction: '+err);  
+            console.log('Error Saving auction "'+ req.body.id +'": '+err);  
             throw err;  
         }
     });

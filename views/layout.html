@@ -23,10 +23,9 @@
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!--<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
           <div class="container">
           <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
@@ -40,7 +39,6 @@
               <a class="navbar-brand" href="/auction/weohi">Auction 3</a>
             </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               {% if globalData.user %}
               <ul class="nav navbar-nav navbar-right">
@@ -60,10 +58,53 @@
                 <li><a href="#" data-toggle="modal" data-target="#loginModal">Login</a></li>
               </ul>
               {% endif %}
-            </div><!-- /.navbar-collapse -->
-          </div><!-- /.container-fluid -->
-          </div><!-- /.container-fluid -->
-        </nav>
+            </div>
+          </div>
+          </div>
+        </nav>-->
+        <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Project name</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <!--<li><a href="/">Home</a></li>-->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Auctions <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/auction/1">Auction 1</a></li>
+                <li><a href="/auction/2">Auction 2</a></li>
+                <li><a href="/auction/3">Auction 3</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <!--<li><a href="../navbar/">Default</a></li>-->
+            {% if globalData.loggedIn %}
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ globalData.user }} <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/myaccount">My Account</a></li>
+                <li><a href="/logout">Logout</a></li>
+              </ul>
+            </li>
+            {% else %}
+            <li><a href="/signup">Signup</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#loginModal">Login</a></li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
 
         <div class="container">
             <div class="wrapper_container">
@@ -79,7 +120,7 @@
             <script src="/js/toastr.js"></script>
         {% endblock %}
         
-        {% if loginRequired and not globalData.loggedIn %}
+        {% if not globalData.loggedIn %}
             <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
             
             <!-- Modal -->

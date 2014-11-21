@@ -20,6 +20,7 @@
 					          <th>starting bid</th>
 					          <th>current bid</th>
 					          <th>buy it now</th>
+					          <th>delete</th>
 					        </tr>
 					      </thead>
 					      <tbody>
@@ -30,6 +31,7 @@
 						          <td>{{ auction.starting_bid }}</td>
 						          <td>{{ auction.current_bid }}</td>
 						          <td>{{ auction.buy_it_now }}</td>
+						          <td><a href="/admin/deleteAuction?id={{ auction.id }}">delete</td>
 						        </tr>
                         	{% endfor %}
 					      </tbody>
