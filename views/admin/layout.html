@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin - Bootstrap Admin Template</title>
+    <title>{% block title %}{{ globalData.settings.website_title }}{% endblock %}</title>
 
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/admin.css" rel="stylesheet">
@@ -39,7 +39,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">SB Admin</a>
+                <a class="navbar-brand" href="/">{{ globalData.settings.website_name }} Admin</a>
             </div>
             <!-- Top Menu Items -->
             <ul class="nav navbar-right top-nav">
@@ -127,7 +127,7 @@
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ globalData.user }} <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ globalData.user.username }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
                             <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
@@ -155,6 +155,10 @@
                         <a href="/admin/auctions"><i class="fa fa-fw fa-dashboard"></i> Auctions</a>
                     </li>
                     <li>
+                        <a href="/admin/settings"><i class="fa fa-fw fa-wrench"></i> Global Settings</a>
+                    </li>
+                    <!--
+                    <li>
                         <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
                     </li>
                     <li>
@@ -166,9 +170,7 @@
                     <li>
                         <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
                     </li>
-                    <li>
-                        <a href="/admin/settings"><i class="fa fa-fw fa-wrench"></i> Auction Settings</a>
-                    </li>
+                    
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
                         <ul id="demo" class="collapse">
@@ -180,6 +182,7 @@
                             </li>
                         </ul>
                     </li>
+                    -->
                 </ul>
             </div>
             <!-- /.navbar-collapse -->

@@ -1,0 +1,44 @@
+{% extends '../layout.html' %}
+
+{% block title %}{% parent %} | {{ title }}{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}    
+    {{ message }}
+{% endblock %}
+
+{% block loadlast %}
+  {% parent %}
+    <div class="container">
+      <div class="row">
+        
+        <div class="col-xs-12 col-sm-3" id="sidebar" role="navigation">
+	        
+	        <div class="well">
+	        	<h4 class="text-center">My Account Menu</h4>
+	            <a class="btn-block" href="/myaccount/#content"><button type="button" class="btn btn-primary btn btn-block">My Account Home</button></a>
+	            <a class="btn-block" href="/myaccount/newauction#content"><button type="button" class="btn btn-primary btn btn-block">Post New Auction</button></a>
+	            <a class="btn-block" href="/myaccount/personalinfo#content"><button type="button" class="btn btn-primary btn btn-block">Personal Info</button></a>
+	        </div>
+
+	        <div class="well">
+	        	<h4 class="text-center">Buyer Menu</h4>
+	            <a class="btn-block" href="/myaccount/auctionsbidon#content"><button type="button" class="btn btn-success btn btn-block">Bid on</button></a>
+	            <a class="btn-block" href="/myaccount/auctionswon#content"><button type="button" class="btn btn-success btn btn-block">Won</button></a>
+	            <a class="btn-block" href="/myaccount/auctionslost#content"><button type="button" class="btn btn-success btn btn-block">Lost</button></a>
+	            <a class="btn-block" href="/myaccount/auctionswatching#content"><button type="button" class="btn btn-success btn btn-block">Watching</button></a>
+	        </div>
+
+        </div>
+  	
+        <div id="content" class="well col-xs-12 col-sm-9">
+          {% block inner_content %}
+          {% endblock %}
+        </div>
+
+    </div>
+  </div>
+{% endblock %}

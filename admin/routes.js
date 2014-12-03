@@ -37,10 +37,9 @@ app.get('/admin/settings', ensureAdminAuthenticated, function(req, res) {
     });
 });
 
-app.post('/admin/settings', function(req, res) {
-    console.log(req.body);
+app.post('/admin/settings', ensureAdminAuthenticated, function(req, res) {
     if (req.body) {
-        var localSettings = new Settings();
+        var localSettings = new models.Settings();
 
         localSettings.website_name = req.body.website_name;
         localSettings.website_title = req.body.website_title;
@@ -65,7 +64,7 @@ app.post('/admin/settings', function(req, res) {
 app.get('/admin/auction/*', ensureAdminAuthenticated, function(req, res) {
     loadGlobalData(req, function (globalData) {
         loadAuctionData(req.params[0], function (auctionData) {
-            Images.find({ 'auctionId': req.params[0] }, function(err, imageData) {
+            models.Images.find({ 'auctionId': req.params[0] }, function(err, imageData) {
                 res.render('admin/auction', {
                     globalData: globalData,
                     title: 'Auction',
@@ -93,7 +92,7 @@ app.get('/admin', ensureAdminAuthenticated, function(req, res) {
     loadGlobalData(req, function (globalData) {
         res.render('admin/dashboard', {
             globalData: globalData,
-            title: 'Auction'
+            title: 'Admin'
         });
     });
 });
@@ -105,8 +104,8 @@ app.get('/admin/deleteAuction', ensureAdminAuthenticated, function(req, res) {
     res.redirect('/admin/auctions');
 });
 
-app.post('/admin/newAuction', function(req, res) {
-    var newAuction = new Auction();
+app.post('/admin/newAuction', ensureAdminAuthenticated, function(req, res) {
+    var newAuction = new models.Auction();
 
     newAuction.id = req.body.id;
     newAuction.starting_bid = req.body.starting_bid;
@@ -123,7 +122,7 @@ app.post('/admin/newAuction', function(req, res) {
     res.redirect('/admin/auctions');
 });
 
-app.post('/admin/imageUpload', function (req, res) {
+app.post('/admin/imageUpload', ensureAdminAuthenticated, function (req, res) {
     data = {};
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
@@ -146,7 +145,7 @@ app.post('/admin/imageUpload', function (req, res) {
                 if (err) {
                     console.error(err);
                 } else {
-                    var image = new Images();
+                    var image = new models.Images();
 
                     image.auctionId = data.id;
                     image.title = data.title;
@@ -168,25 +167,24 @@ app.post('/admin/imageUpload', function (req, res) {
 });
 
 app.get('/admin/imageRemove', ensureAdminAuthenticated, function(req, res) {
-    Images.remove({ '_id' : req.query.id }, function (err) {
+    models.Images.remove({ '_id' : req.query.id }, function (err) {
         if (err) return console.error(err);
     });
     res.redirect(req.headers.referer);
 });
 
 function ensureAdminAuthenticated(req, res, next) {
-    return next();
-    if (req.session.isAdmin) { return next(); }
+    if (req.isAuthenticated()) { return next(); }
     res.redirect('/admin/login');
 }
 
 function loadAuctionsData(cb) {
     var data = {};
-    Auction.find(function (err, Auctions) {
+    models.Auction.find(function (err, Auctions) {
         Auctions.forEach(function(Auction){
             console.log(Auction.id);
         });
-        Images.find(function (err, AuctionImages) {
+        models.Images.find(function (err, AuctionImages) {
             if (err) return console.error(err);
                 data.auctions = Auctions;
                 data.images = AuctionImages;
@@ -196,7 +194,7 @@ function loadAuctionsData(cb) {
 }
 
 function loadAuctionData(id, cb) {
-    Auction.findOne({ 'id' : id }, function (err, AuctionData) {
+    models.Auction.findOne({ 'id' : id }, function (err, AuctionData) {
         if (err) return console.error(err);
             return cb(AuctionData);
         });

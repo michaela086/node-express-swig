@@ -1,12 +1,6 @@
-var LocalStrategy   = require('passport-local').Strategy;
-var User = require('../models/user');
-var Admin = require('../models/admin');
-var bCrypt = require('bcrypt-nodejs');
-var util = require('util');
-var server_config = require('../server_config.js');
-
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-
+var LocalStrategy = require('passport-local').Strategy;
+var models = require('../models');
+var functions = require('../includes/functions.js');
 
 module.exports = function(passport){
 
@@ -15,8 +9,9 @@ module.exports = function(passport){
         },
         function(req, username, password, done) { 
             // check in mongo if a user with username exists or not
-            User.findOne({ 'username' :  username }, 
+            models.User.findOne({ 'username' :  username }, 
                 function(err, user) {
+                    console.log(user);
                     // In case of any error, return using the done method
                     if (err)
                         return done(err);
@@ -26,13 +21,12 @@ module.exports = function(passport){
                         return done(null, false, req.flash('message', 'User Not found.'));                 
                     }
                     // User exists but wrong password, log the error 
-                    if (!isValidPassword(user, password)){
+                    if (!functions.isValidPassword(user, password)){
                         console.log('Invalid Password');
                         return done(null, false, req.flash('message', 'Invalid Password')); // redirect back to login page
                     }
                     // User and password both match, return user from done method
                     // which will be treated like success
-                    req.session.user = username;
                     return done(null, user);
                 }
             );
@@ -45,8 +39,9 @@ module.exports = function(passport){
         },
         function(req, username, password, done) {
             // check in mongo if a user with username exists or not
-            Admin.findOne({ 'username' :  username }, 
+            models.Admin.findOne({ 'username' :  username }, 
                 function(err, user) {
+                    console.log(user);
                     // In case of any error, return using the done method
                     if (err)
                         return done(err);
@@ -56,13 +51,12 @@ module.exports = function(passport){
                         return done(null, false, req.flash('message', 'User Not found.'));                 
                     }
                     // User exists but wrong password, log the error 
-                    if (!isValidPassword(user, password)){
+                    if (!functions.isValidPassword(user, password)){
                         console.log('Invalid Password');
                         return done(null, false, req.flash('message', 'Invalid Password')); // redirect back to login page
                     }
                     // User and password both match, return user from done method
                     // which will be treated like success
-                    req.session.isAdmin = true;
                     return done(null, user);
                 }
             );
@@ -70,20 +64,4 @@ module.exports = function(passport){
         })
     );
 
-    passport.use('google', new GoogleStrategy({
-        clientID: server_config.GOOGLE_CLIENT_ID,
-        clientSecret: server_config.GOOGLE_CLIENT_SECRET,
-        callbackURL: 'http://'+server_config.serverip+':'+server_config.serverport+'/auth/google/callback'
-      },
-      function(accessToken, refreshToken, profile, done) {
-        process.nextTick(function () {
-          return done(null, profile);
-        });
-      }
-    ));
-
-    var isValidPassword = function(user, password){
-        return bCrypt.compareSync(password, user.password);
-    }
-    
 }

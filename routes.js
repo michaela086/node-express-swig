@@ -47,27 +47,14 @@ app.get('/login', function(req, res) {
     });
 });
 
-app.get('/auth/google', passport.authenticate('google', { 
-    scope: ['https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email']
-    }
-), function(req, res) {
-});
-
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), function(req, res) {
-    req.session.user = req.user.displayName;
-    res.redirect(getLastUrl(req));
-});
-
 app.get('/auction/*', function(req, res) {
     req.session.lastUrl = req.url;
     loadGlobalData(req, function (globalData) {
-        Auction.findOne({ 'id' :  req.params[0] }, function(err, auctionData) {
-            Images.find({ 'auctionId': req.params[0] }, function(err, imageData) {
+        models.Auction.findOne({ 'id' :  req.params[0] }, function(err, auctionData) {
+            models.Images.find({ 'auctionId': req.params[0] }, function(err, imageData) {
                 console.log(imageData);
                 if (auctionData) {
                     res.render('auction', {
-                        loginRequired: true,
                         globalData: globalData,
                         auctionData: auctionData,
                         images: imageData,
@@ -85,12 +72,74 @@ app.get('/auction/*', function(req, res) {
     });
 });
 
-app.post('/bid', function(req, res) {
+app.get('/myaccount', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('myaccount/home', {
+            globalData: globalData,
+            title: 'My Account'
+        });
+    });
+});
+
+app.get('/myaccount/newauction', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('myaccount/newauction', {
+            globalData: globalData,
+            title: 'New Auction'
+        });
+    });
+});
+
+app.get('/myaccount/personalinfo', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('myaccount/personalinfo', {
+            globalData: globalData,
+            title: 'My Info'
+        });
+    });
+});
+
+app.get('/myaccount/auctionsbidon', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('myaccount/auctionsbidon', {
+            globalData: globalData,
+            title: 'Auctions Bid On'
+        });
+    });
+});
+
+app.get('/myaccount/auctionswon', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('myaccount/auctionswon', {
+            globalData: globalData,
+            title: 'Auctions Won'
+        });
+    });
+});
+
+app.get('/myaccount/auctionslost', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('myaccount/auctionslost', {
+            globalData: globalData,
+            title: 'Auctions Lost'
+        });
+    });
+});
+
+app.get('/myaccount/auctionswatching', ensureAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('myaccount/auctionswatching', {
+            globalData: globalData,
+            title: 'Auctions Watching'
+        });
+    });
+});
+
+app.post('/bid', ensureAuthenticated, function(req, res) {
     if (req.session.user) {
         loadGlobalData(req, function (globalData) {
-            console.log(globalData.settings);
             newBid = req.body.newBid;
-            Auction.findOne({ 'id' : req.body.auctionId }, function(err, auctionData) {
+            models.Auction.findOne({ 'id' : req.body.auctionId }, function(err, auctionData) {
                 if (auctionData) {
                     minimal_bid = auctionData.current_bid + globalData.settings.minimal_bid_increase;
                     if (newBid > auctionData.current_bid) {
@@ -120,16 +169,12 @@ app.post('/bid', function(req, res) {
 });
 
 function loadGlobalData(req, cb) {
-    Settings.findOne({}, {}, { sort: { 'saved' : -1 } }, function(err, local_settings) {
-        console.log(local_settings);
+    models.Settings.findOne({}, {}, { sort: { 'saved' : -1 } }, function(err, local_settings) {
         var data = {};
-        if (req.session.user != undefined) {
-            data.user = req.session.user;
-        } else {
-            data.user = '';
-        }
+        data.user = req.user;
         data.settings = local_settings;
         data.server = req.headers.host;
+        console.log(data);
         return cb(data);
     });
 }

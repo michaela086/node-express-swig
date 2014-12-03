@@ -16,10 +16,9 @@ var io = require('socket.io')(server);
 var formidable = require('formidable');
 var util = require('util');
 var fs   = require('fs-extra');
+var functions = require('./includes/functions');
 
-var Settings = require('./models/settings');
-var Auction = require('./models/auction');
-var Images = require('./models/images');
+var models = require('./models');
 
 var server_config = require('./server_config.js');
 
@@ -58,33 +57,8 @@ eval(fs.readFileSync(__dirname + '/admin/signup.js')+'');
 eval(fs.readFileSync(__dirname + '/admin/routes.js')+'');
 eval(fs.readFileSync(__dirname + '/routes.js')+'');
 eval(fs.readFileSync(__dirname + '/socket.js')+'');
+eval(fs.readFileSync(__dirname + '/inital_setup.js')+'');
 
 console.log('Application Started on http://'+server_config.serverip+':'+server_config.serverport+'/');
-
-//This will create the default settings if there are none
-//Settings.remove(function (err) { if (err) return console.error(err); });
-Settings.findOne(function(err, local_settings) {
-    if (!local_settings) {
-    	var localSettings = new Settings();
-
-	    localSettings.website_name = 'Auction Site';
-	    localSettings.website_title = 'Auction Title';
-	    localSettings.minimal_bid_increase = '5.00';
-	    localSettings.allow_high_bidder_increase_own_bid = '1';
-	    localSettings.currency_symbol = '$';
-	    localSettings.extend_auction_enable = '1';
-        localSettings.extend_auction_add = '60';
-        localSettings.extend_auction_within = '60';
-
-	    localSettings.save(function(err) {
-	        if (err){
-	            console.log('Error while saving settings: '+err);  
-	            throw err;  
-	        }
-	        console.log('\nLocal settings saved succesfully\n');    
-	    });
-    }
-});
-
 
 server.listen(server_config.serverport);

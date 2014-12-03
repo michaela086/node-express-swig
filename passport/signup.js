@@ -1,7 +1,7 @@
 var LocalStrategy   = require('passport-local').Strategy;
-var User = require('../models/user');
-var Admin = require('../models/admin');
-var bCrypt = require('bcrypt-nodejs');
+var functions = require('../includes/functions');
+var models = require('../models');
+
 
 module.exports = function(passport){
 
@@ -12,7 +12,7 @@ module.exports = function(passport){
 
             findOrCreateUser = function(){
                 // find a user in Mongo with provided username
-                User.findOne({ 'username' :  username }, function(err, user) {
+                models.User.findOne({ 'username' :  username }, function(err, user) {
                     // In case of any error, return using the done method
                     if (err){
                         console.log('Error in SignUp: '+err);
@@ -25,14 +25,14 @@ module.exports = function(passport){
                     } else {
                         // if there is no user with that email
                         // create the user
-                        var newUser = new User();
+                        var newUser = new models.User();
 
                         // set the user's local credentials
                         newUser.username = username;
-                        newUser.password = createHash(password);
+                        newUser.password = functions.createHash(password);
                         newUser.email = req.param('email');
-                        newUser.firstName = req.param('firstName');
-                        newUser.lastName = req.param('lastName');
+                        newUser.displayname = req.param('displayname');
+                        newUser.phone = req.param('phone');
 
                         // save the user
                         newUser.save(function(err) {
@@ -51,12 +51,5 @@ module.exports = function(passport){
             process.nextTick(findOrCreateUser);
         })
     );
-
-
-
-    // Generates hash using bCrypt
-    var createHash = function(password){
-        return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
-    }
 
 }
