@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+
+{% block title %}{% parent %} | {{ title }}{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+		<div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-5 col-lg-offset-1">
+              			<form action="/admin/settings" method="POST" class="form-horizontal">
+
+                          <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">Website name</label>
+						    <div class="col-sm-6">
+						      <input type="text" required="required" class="form-control" name="website_name" value="{{ globalData.settings.website_name }}">
+						    </div>
+						  </div>
+
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">Website title</label>
+						    <div class="col-sm-6">
+						      <input type="text" required="required" class="form-control" name="website_title" value="{{ globalData.settings.website_title }}">
+						    </div>
+						  </div>
+						  
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">Minimal bid increase</label>
+						    <div class="col-sm-6">
+						      <input type="number" required="required" class="form-control" name="minimal_bid_increase" value="{{ globalData.settings.minimal_bid_increase }}">
+						    </div>
+						  </div>
+
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">Allow high bidder to increase bid</label>
+						    <div class="col-sm-6">
+						      <select class="form-control" name="allow_high_bidder_increase_own_bid">
+							      {% if globalData.settings.allow_high_bidder_increase_own_bid %}
+								  	<option value="1">Yes</option>
+								 	<option value="0">No</option>
+								  {% else %}
+								 	<option value="0">No</option>
+								    <option value="1">Yes</option>
+								  {% endif %}
+							  </select>
+						    </div>
+						  </div>
+
+						  
+
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">Add time to end of auction</label>
+						    <div class="col-sm-6">
+						      <select class="form-control" name="extend_auction_enable">
+							      {% if globalData.settings.extend_auction_enable %}
+								  	<option value="1">Yes</option>
+								 	<option value="0">No</option>
+								  {% else %}
+								 	<option value="0">No</option>
+								    <option value="1">Yes</option>
+								  {% endif %}
+							  </select>
+						    </div>
+						  </div>
+					      
+					      
+
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">add (seconds)</label>
+						    <div class="col-sm-6">
+						      <input type="number" required="required" class="form-control" name="extend_auction_add" value="{{ globalData.settings.extend_auction_add }}" {% if globalData.settings.extend_auction_enable !== 1 %}readonly{% endif %}>
+						    </div>
+						  </div>
+
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">within (seconds)</label>
+						    <div class="col-sm-6">
+						      <input type="number" required="required" class="form-control" name="extend_auction_within" value="{{ globalData.settings.extend_auction_within }}" {% if globalData.settings.extend_auction_enable !== 1 %}readonly{% endif %}>
+						    </div>
+						  </div>
+
+
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-6 control-label">Currency symbol</label>
+						    <div class="col-sm-6">
+						      <input type="text" class="form-control" name="currency_symbol" value="{{ globalData.settings.currency_symbol }}">
+						    </div>
+						  </div>
+
+						  
+						  <div class="form-group">
+						    <div class="col-sm-offset-10 col-sm-2">
+						      <button type="submit" class="btn btn-default">Save</button>
+						    </div>
+						  </div>
+
+						</form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

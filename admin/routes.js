@@ -28,14 +28,50 @@ app.get('/admin/auctions', ensureAdminAuthenticated, function(req, res) {
     });
 });
 
+app.get('/admin/settings', ensureAdminAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        res.render('admin/settings', {
+            globalData: globalData,
+            title: 'Auction'
+        });
+    });
+});
+
+app.post('/admin/settings', function(req, res) {
+    console.log(req.body);
+    if (req.body) {
+        var localSettings = new Settings();
+
+        localSettings.website_name = req.body.website_name;
+        localSettings.website_title = req.body.website_title;
+        localSettings.minimal_bid_increase = req.body.minimal_bid_increase;
+        localSettings.allow_high_bidder_increase_own_bid = req.body.allow_high_bidder_increase_own_bid;
+        localSettings.extend_auction_enable = req.body.extend_auction_enable;
+        localSettings.extend_auction_add = req.body.extend_auction_add;
+        localSettings.extend_auction_within = req.body.extend_auction_within;
+        localSettings.currency_symbol = req.body.currency_symbol;
+
+        localSettings.save(function(err) {
+            if (err){
+                console.log('Error while saving settings: '+err);  
+                throw err;  
+            }
+            console.log('Local settings saved succesfully');    
+        });
+    }
+    res.redirect('/admin/settings');
+});
+
 app.get('/admin/auction/*', ensureAdminAuthenticated, function(req, res) {
     loadGlobalData(req, function (globalData) {
         loadAuctionData(req.params[0], function (auctionData) {
-            console.log(auctionData);
-            res.render('admin/auction', {
-                globalData: globalData,
-                title: 'Auction',
-                auctionData: auctionData
+            Images.find({ 'auctionId': req.params[0] }, function(err, imageData) {
+                res.render('admin/auction', {
+                    globalData: globalData,
+                    title: 'Auction',
+                    auctionData: auctionData,
+                    images: imageData
+                });
             });
         });
     });
@@ -87,6 +123,57 @@ app.post('/admin/newAuction', function(req, res) {
     res.redirect('/admin/auctions');
 });
 
+app.post('/admin/imageUpload', function (req, res) {
+    data = {};
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        data.title = fields.title;
+        data.id = fields.auctionId;
+    });
+
+    form.on('end', function(fields, files) {
+        if (this.openedFiles[0].size > 0) {
+            var temp_path = this.openedFiles[0].path;
+            
+            var file_ext = this.openedFiles[0].name;
+            
+            var file_name = Date.now()+file_ext;
+
+            var new_location = 'public/img/full/';
+            var full_path = new_location + file_name;
+
+            fs.copy(temp_path, full_path, function(err) {  
+                if (err) {
+                    console.error(err);
+                } else {
+                    var image = new Images();
+
+                    image.auctionId = data.id;
+                    image.title = data.title;
+                    image.full = '/img/full/'+file_name;
+                    image.thumb = '/img/full/'+file_name;
+
+                    image.save(function(err) {
+                        if (err){
+                            console.log('Error in Saving image: '+err);  
+                            throw err;  
+                        }
+                        console.log('Image saved successfully');
+                        res.redirect(req.headers.referer);
+                    });
+                }
+            });
+        }
+    });
+});
+
+app.get('/admin/imageRemove', ensureAdminAuthenticated, function(req, res) {
+    Images.remove({ '_id' : req.query.id }, function (err) {
+        if (err) return console.error(err);
+    });
+    res.redirect(req.headers.referer);
+});
+
 function ensureAdminAuthenticated(req, res, next) {
     return next();
     if (req.session.isAdmin) { return next(); }
@@ -96,9 +183,15 @@ function ensureAdminAuthenticated(req, res, next) {
 function loadAuctionsData(cb) {
     var data = {};
     Auction.find(function (err, Auctions) {
-        if (err) return console.error(err);
-            data.auctions = Auctions;
-            return cb(data);
+        Auctions.forEach(function(Auction){
+            console.log(Auction.id);
+        });
+        Images.find(function (err, AuctionImages) {
+            if (err) return console.error(err);
+                data.auctions = Auctions;
+                data.images = AuctionImages;
+                return cb(data);
+            });
         });
 }
 

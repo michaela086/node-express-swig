@@ -1,9 +1,24 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{% parent %} | {{ title }}{% endblock %}
 
 {% block head %}
   {% parent %}
+  <style type="text/css">
+    #img_container {
+        position:relative;
+        display:inline-block;
+        text-align:center;
+        border:1px solid red;
+    }
+
+    .rm-button {
+      display: block;
+      position: absolute;
+      right:0px;
+      top:0px
+     }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +28,23 @@
                     <div class="col-lg-12">
 
                       {% if auctionData %}
-                        <p>Auction {{ auctionData.id }}</p>
+                        <p><a href="/auction/{{ auctionData.id }}">Auction {{ auctionData.id }}</a></p>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {% if images.length > 0 %}
+                                    {% for image in images %}
+                                        <div id="img_container" class="col-lg-3">
+                                            <img src="{{image.full}}" alt="{{image.alt}}" class="img-thumbnail">
+                                            <a href="/admin/imageRemove?id={{image.id}}"><button class="rm-button">X</button></a>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div>No Images</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <table class="table">
 					      <thead>
 					        <tr>
@@ -34,43 +65,12 @@
                         	{% endfor %}
 					      </tbody>
 					    </table>
-
-
-    <style type="text/css" media="screen">
-        #progress {
-            width: 500px;
-            border: 1px solid black;
-            position: relative;
-            padding: 3px;
-        }
-
-        #percent {
-            position: absolute;
-            left: 50%;
-        }
-
-        #bar {
-            height: 20px;
-            background-color: green;
-            width: 0%;
-        }
-    </style>
-<form id="uploadForm"
-      enctype="multipart/form-data"
-      action="/api/upload"
-      method="post">
-    <input type="file" id="userFileInput" name="userFile"/>
-</form>
-<span id="status"></span>
-
-<div id="progress">
-    <span id="percent">0%</span>
-
-    <div id="bar"></div>
-</div>
-
-
-
+                        <form action="/admin/imageUpload" enctype="multipart/form-data" method="post">
+                            <input name="title" type="text" />
+                            <input name="auctionId" type="text" value="{{ auctionData.id }}" style="display:none;"/>
+                            <input multiple="multiple" name="upload" type="file" />
+                            <input type="submit" value="Upload" />
+                        </form>
 					  {% else %}
 					    <p>Invalid auction Data</p>
 					  {% endif %}

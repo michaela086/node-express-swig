@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{% parent %} | {{ title }}{% endblock %}
 
 {% block head %}
   {% parent %}

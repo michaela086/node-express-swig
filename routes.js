@@ -60,77 +60,78 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
 });
 
 app.get('/auction/*', function(req, res) {
-    console.log(req.url);
     req.session.lastUrl = req.url;
     loadGlobalData(req, function (globalData) {
         Auction.findOne({ 'id' :  req.params[0] }, function(err, auctionData) {
             Images.find({ 'auctionId': req.params[0] }, function(err, imageData) {
-                console.log('imageData');
                 console.log(imageData);
+                if (auctionData) {
+                    res.render('auction', {
+                        loginRequired: true,
+                        globalData: globalData,
+                        auctionData: auctionData,
+                        images: imageData,
+                        title: 'My Auction'
+                    });
+                } else {
+                    res.render('error', {
+                        globalData: globalData,
+                        title: 'My Auction',
+                        message: 'Invalid auction'
+                    });
+                }
             });
-            images = [{full: '/img/imgres-1.jpg', thumbnail: '/img/imgres-1.jpg'},
-                      {full: '/img/imgres-2.jpg', thumbnail: '/img/imgres-2.jpg'},
-                      {full: '/img/imgres-3.jpg', thumbnail: '/img/imgres-3.jpg'},
-                      {full: '/img/imgres-4.jpg', thumbnail: '/img/imgres-4.jpg'},
-                      {full: '/img/imgres-5.jpg', thumbnail: '/img/imgres-5.jpg'}];
-
-            if (auctionData) {
-                res.render('auction', {
-                    loginRequired: true,
-                    globalData: globalData,
-                    auctionData: auctionData,
-                    images: images,
-                    title: 'My Auction'
-                });
-            } else {
-                res.render('error', {
-                    globalData: globalData,
-                    title: 'My Auction',
-                    message: 'Invalid auction'
-                });
-            }
         });
     });
 });
 
 app.post('/bid', function(req, res) {
     if (req.session.user) {
-        newBid = req.body.newBid;
-        Auction.findOne({ 'id' : req.body.auctionId }, function(err, auctionData) {
-            if (auctionData) {
-                if (newBid > auctionData.current_bid) {
-                    auctionData.current_bid = newBid;
-                    auctionData.save(function(err) {
-                        if (err){
-                            res.send({ status: 'error', message: err });
+        loadGlobalData(req, function (globalData) {
+            console.log(globalData.settings);
+            newBid = req.body.newBid;
+            Auction.findOne({ 'id' : req.body.auctionId }, function(err, auctionData) {
+                if (auctionData) {
+                    minimal_bid = auctionData.current_bid + globalData.settings.minimal_bid_increase;
+                    if (newBid > auctionData.current_bid) {
+                        if (newBid >= minimal_bid) {
+                            auctionData.current_bid = newBid;
+                            auctionData.save(function(err) {
+                                if (err){
+                                    res.send({ status: 'error', message: err });
+                                }
+                                res.send({ status: 'success', message: '' });
+                                io.sockets.in(req.body.auctionId).emit('updateAuctionData', req.body.newBid, req.session.user + ' placed a bid of ' + newBid);
+                            });
+                        } else {
+                            res.send({ status: 'error', message: req.session.user + ' not big enough, must be atleast ' + minimal_bid });
                         }
-                        res.send({ status: 'success', message: '' });
-                        io.sockets.in(req.body.auctionId).emit('updateAuctionData', req.body.newBid, req.session.user + ' placed a bid of ' + newBid);
-                    });
+                    } else {
+                        res.send({ status: 'error', message: req.session.user + ' placed a invalid bid of ' + newBid });
+                    }
                 } else {
-                    res.send({ status: 'error', message: req.session.user + ' placed a invalid bid of ' + newBid });
+                    res.send({ status: 'error', message: 'There was an issue placeing a bid of ' + newBid });
                 }
-            } else {
-                res.send({ status: 'error', message: 'There was an issue placeing a bid of ' + newBid });
-            }
+            });
         });
     } else {
-        res.send({status: 'faled', message: 'User is not logged in'});
+        res.send({status: 'failed', message: 'User is not logged in'});
     }
 });
 
 function loadGlobalData(req, cb) {
-    var data = {};
-    if (req.session.user != undefined) {
-        data.user = req.session.user;
-    } else {
-        data.user = '';
-    }
-    data.name = 'WebsiteName';
-    data.server = req.headers.host;
-    console.log(req.user);
-    console.log(data);
-    return cb(data);
+    Settings.findOne({}, {}, { sort: { 'saved' : -1 } }, function(err, local_settings) {
+        console.log(local_settings);
+        var data = {};
+        if (req.session.user != undefined) {
+            data.user = req.session.user;
+        } else {
+            data.user = '';
+        }
+        data.settings = local_settings;
+        data.server = req.headers.host;
+        return cb(data);
+    });
 }
 
 function getLastUrl(req) {

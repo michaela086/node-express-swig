@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{% parent %} | {{ title }}{% endblock %}
 
 {% block head %}
   {% parent %}
@@ -15,6 +15,7 @@
                         <table class="table">
 					      <thead>
 					        <tr>
+					          <th>image</th>
 					          <th>edit</th>
 					          <th>id</th>
 					          <th>starting bid</th>
@@ -26,6 +27,7 @@
 					      <tbody>
 					        {% for auction in auctions %}
 						        <tr>
+						          <td><img src="{{ image.thumb }}" alt="{{ image.alt }}" class="gallery-main"></td>
 						          <td><a href="/admin/auction/{{ auction.id }}">{{ auction.id }}</a></td>
 						          <td><a href="/auction/{{ auction.id }}">{{ auction.id }}</a></td>
 						          <td>{{ auction.starting_bid }}</td>

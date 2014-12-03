@@ -7,10 +7,10 @@
         <meta name="author" content="">
         <link rel="icon" href="../../favicon.ico">
 
-        <title>{% block title %}Foundation | Welcome{% endblock %}</title>
+        <title>{% block title %}{{ globalData.settings.website_title }}{% endblock %}</title>
 
         <!-- Bootstrap core CSS -->
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Custom styles for this template -->
         <link href="/css/main.css" rel="stylesheet">
@@ -74,14 +74,14 @@
         </div><!-- /.container -->
 
         {% block loadlast %}
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-            <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/bootstrap.min.js"></script>
             <link href="/css/toastr.css" rel="stylesheet"/>
             <script src="/js/toastr.js"></script>
         {% endblock %}
         
         {% if not globalData.user %}
-            <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+            <link href="/css/font-awesome.min.css" rel="stylesheet">
             
             <!-- Modal -->
             <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
