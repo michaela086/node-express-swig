@@ -14,7 +14,6 @@ app.post('/signup', passport.authenticate('signup', {
 }));
 
 app.get('/logout', function(req, res) {
-    req.session.user = '';
     req.logout();
     res.redirect('/');
 });
@@ -136,7 +135,7 @@ app.get('/myaccount/auctionswatching', ensureAuthenticated, function(req, res) {
 });
 
 app.post('/bid', ensureAuthenticated, function(req, res) {
-    if (req.session.user) {
+    if (req.user) {
         loadGlobalData(req, function (globalData) {
             newBid = req.body.newBid;
             models.Auction.findOne({ 'id' : req.body.auctionId }, function(err, auctionData) {
@@ -150,13 +149,13 @@ app.post('/bid', ensureAuthenticated, function(req, res) {
                                     res.send({ status: 'error', message: err });
                                 }
                                 res.send({ status: 'success', message: '' });
-                                io.sockets.in(req.body.auctionId).emit('updateAuctionData', req.body.newBid, req.session.user + ' placed a bid of ' + newBid);
+                                io.sockets.in(req.body.auctionId).emit('updateAuctionData', req.body.newBid, req.user.displayname + ' placed a bid of ' + newBid);
                             });
                         } else {
-                            res.send({ status: 'error', message: req.session.user + ' not big enough, must be atleast ' + minimal_bid });
+                            res.send({ status: 'error', message: req.user.displayname + ' not big enough, must be atleast ' + minimal_bid });
                         }
                     } else {
-                        res.send({ status: 'error', message: req.session.user + ' placed a invalid bid of ' + newBid });
+                        res.send({ status: 'error', message: req.user.displayname + ' placed a invalid bid of ' + newBid });
                     }
                 } else {
                     res.send({ status: 'error', message: 'There was an issue placeing a bid of ' + newBid });
