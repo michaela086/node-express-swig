@@ -37,6 +37,19 @@ app.get('/admin/settings', ensureAdminAuthenticated, function(req, res) {
     });
 });
 
+app.get('/admin/users', ensureAdminAuthenticated, function(req, res) {
+    loadGlobalData(req, function (globalData) {
+        models.User.find(function (err, Users) {
+            console.log(Users);
+            res.render('admin/users', {
+                globalData: globalData,
+                title: 'Users',
+                users: Users
+            });
+        });
+    });
+});
+
 app.post('/admin/settings', ensureAdminAuthenticated, function(req, res) {
     if (req.body) {
         var localSettings = new models.Settings();

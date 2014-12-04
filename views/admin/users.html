@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block title %}{% parent %} | {{ title }}{% endblock %}
+
+{% block head %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Display name</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>{{ user.displayname }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone }}</td>
+            <td><a href="/admin/userdelete?id={{ user.id }}">delete</td>
+          </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+{% endblock %}

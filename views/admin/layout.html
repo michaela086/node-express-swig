@@ -157,6 +157,9 @@
                     <li>
                         <a href="/admin/settings"><i class="fa fa-fw fa-wrench"></i> Global Settings</a>
                     </li>
+                    <li>
+                        <a href="/admin/users"><i class="fa fa-fw fa-user"></i> Manage Users</a>
+                    </li>
                     <!--
                     <li>
                         <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
@@ -188,8 +191,16 @@
             <!-- /.navbar-collapse -->
         </nav>
 
-        {% block content %}
-		{% endblock %}
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% block content %}
+		                {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
 		
     </div>
     <!-- /#wrapper -->
